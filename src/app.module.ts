@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { FarModule } from './far/far.module';
+import { FloorPlanModule } from './floor-plan/floor-plan.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { FarModule } from './far/far.module';
 
     // Feature modules
     FarModule,
+    FloorPlanModule,
   ],
 })
 export class AppModule {}

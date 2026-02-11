@@ -12,6 +12,19 @@ import {
 
 export type AreaUnit = 'sqm' | 'sqft' | 'sqyd' | 'gaj';
 export type CityId = 'delhi' | 'noida' | 'gurugram' | 'ghaziabad' | 'faridabad';
+export type FacingDirection = 'north' | 'south' | 'east' | 'west';
+export type RoomType =
+  | 'living'
+  | 'dining'
+  | 'kitchen'
+  | 'pooja'
+  | 'store'
+  | 'utility'
+  | 'parking'
+  | 'servant'
+  | 'study'
+  | 'gym'
+  | 'home_theatre';
 
 export class CalculateFarDto {
   @ApiProperty({
@@ -131,4 +144,75 @@ export class CalculateFarDto {
   })
   @IsBoolean()
   wantLift: boolean;
+
+  // ============================================
+  // FLOOR PLAN GENERATION INPUTS
+  // ============================================
+
+  @ApiPropertyOptional({
+    description: 'Plot facing direction (for Vastu compliance)',
+    enum: ['north', 'south', 'east', 'west'],
+    example: 'east',
+  })
+  @IsOptional()
+  @IsString()
+  @IsIn(['north', 'south', 'east', 'west'])
+  facing?: FacingDirection;
+
+  @ApiPropertyOptional({
+    description: 'Number of bedrooms (1-5)',
+    example: 3,
+    minimum: 1,
+    maximum: 5,
+  })
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  @Max(5)
+  bedrooms?: number;
+
+  @ApiPropertyOptional({
+    description: 'Number of bathrooms (1-5)',
+    example: 2,
+    minimum: 1,
+    maximum: 5,
+  })
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  @Max(5)
+  bathrooms?: number;
+
+  @ApiPropertyOptional({
+    description: 'Additional rooms to include in floor plan',
+    example: ['living', 'dining', 'kitchen', 'pooja'],
+    type: [String],
+  })
+  @IsOptional()
+  @IsArray()
+  @IsIn(
+    [
+      'living',
+      'dining',
+      'kitchen',
+      'pooja',
+      'store',
+      'utility',
+      'parking',
+      'servant',
+      'study',
+      'gym',
+      'home_theatre',
+    ],
+    { each: true },
+  )
+  rooms?: RoomType[];
+
+  @ApiPropertyOptional({
+    description: 'Whether to generate Vastu-compliant floor plan',
+    example: true,
+  })
+  @IsOptional()
+  @IsBoolean()
+  vastuCompliant?: boolean;
 }
