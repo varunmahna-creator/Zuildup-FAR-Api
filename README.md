@@ -51,10 +51,8 @@ Calculate FAR, setbacks, floor areas, and compliance requirements for a resident
   "plotUnit": "sqm",
   "plotWidth": 10,
   "plotDepth": 20,
-  "roadWidth": 12,
   "desiredFloors": 4,
   "wantBasement": true,
-  "basementType": "single",
   "wantStilt": true,
   "wantTerrace": true,
   "wantBalcony": true,
@@ -71,10 +69,8 @@ Calculate FAR, setbacks, floor areas, and compliance requirements for a resident
 | `plotUnit` | string | Yes | Unit: `sqm`, `sqft`, `sqyd`, `gaj` |
 | `plotWidth` | number | No | Plot width in meters |
 | `plotDepth` | number | No | Plot depth in meters |
-| `roadWidth` | number | **Gurugram only** | Road width in meters (affects FAR in Gurugram) |
 | `desiredFloors` | number | Yes | Number of floors desired |
-| `wantBasement` | boolean | Yes | Include basement |
-| `basementType` | string | If basement | `single` or `double` |
+| `wantBasement` | boolean | Yes | Include basement (single level) |
 | `wantStilt` | boolean | Yes | Include stilt parking |
 | `wantTerrace` | boolean | Yes | Include terrace |
 | `wantBalcony` | boolean | Yes | Include balconies |
@@ -222,11 +218,11 @@ Returns detailed bylaws for a specific city.
 |------|-----------|-----------|
 | Delhi | DDA / MCD (MPD-2021) | Plot Size |
 | Noida | Noida Authority / GNIDA | Plot Size |
-| Gurugram | HSVP / DTCP Haryana | **Road Width** |
+| Gurugram | HSVP / DTCP Haryana | Plot Size |
 | Ghaziabad | GDA Building Bylaws | Plot Size |
 | Faridabad | HSVP / MCF Bylaws | Plot Size |
 
-> **Note:** Gurugram requires `roadWidth` parameter as FAR is determined by road width, not plot size.
+> **Note:** Gurugram bylaws updated as per Haryana Building Bye-Laws 2021.
 
 ---
 

@@ -333,20 +333,17 @@ export class FarService {
     const floors: FloorBreakdownDto[] = [];
     const SQM_TO_SQFT = 10.7639;
 
-    // Basement (if selected)
+    // Basement (if selected) - single basement only
     if (input.wantBasement) {
-      const basementLevels = input.basementType === 'double' ? 2 : 1;
-      for (let i = basementLevels; i >= 1; i--) {
-        floors.push({
-          floorName: basementLevels > 1 ? `Basement ${i}` : 'Basement',
-          floorType: 'basement',
-          area: round(groundFloorArea),
-          areaSqft: round(groundFloorArea * SQM_TO_SQFT),
-          countedInFar: basementRule?.countedInFar ?? false,
-          height: Number(basementRule?.minHeight ?? 2.4),
-          notes: `For ${input.basementPurpose?.join('/') || 'parking/storage'}`,
-        });
-      }
+      floors.push({
+        floorName: 'Basement',
+        floorType: 'basement',
+        area: round(groundFloorArea),
+        areaSqft: round(groundFloorArea * SQM_TO_SQFT),
+        countedInFar: basementRule?.countedInFar ?? false,
+        height: Number(basementRule?.minHeight ?? 2.4),
+        notes: `For ${input.basementPurpose?.join('/') || 'parking/storage'}`,
+      });
     }
 
     // Stilt (if selected or mandatory)

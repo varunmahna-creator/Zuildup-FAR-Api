@@ -89,16 +89,6 @@ export class CalculateFarDto {
   wantBasement: boolean;
 
   @ApiPropertyOptional({
-    description: 'Type of basement',
-    enum: ['single', 'double'],
-    example: 'single',
-  })
-  @IsOptional()
-  @IsString()
-  @IsIn(['single', 'double'])
-  basementType?: 'single' | 'double';
-
-  @ApiPropertyOptional({
     description: 'Purpose of basement',
     example: ['parking', 'storage'],
   })
