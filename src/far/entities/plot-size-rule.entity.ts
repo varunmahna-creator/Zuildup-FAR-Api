@@ -19,6 +19,11 @@ export class PlotSizeRule {
   @JoinColumn({ name: 'city_id' })
   city: City;
 
+  // Sub-zone: optional. Used for Ghaziabad ("developed" / "new_development").
+  // Null for cities that don't split.
+  @Column({ name: 'sub_zone', length: 50, nullable: true })
+  subZone: string | null;
+
   @Column({
     name: 'min_size_sqm',
     type: 'decimal',
@@ -36,8 +41,30 @@ export class PlotSizeRule {
   })
   maxSizeSqm: number | null;
 
+  // Total FAR (Real + Purchasable). This is the buildable cap.
+  // Kept as `far` for backward compatibility with existing API consumers.
   @Column({ type: 'decimal', precision: 5, scale: 2 })
   far: number;
+
+  // Real FAR — the FAR allowed by base bylaws without payment.
+  @Column({
+    name: 'real_far',
+    type: 'decimal',
+    precision: 5,
+    scale: 2,
+    default: 0,
+  })
+  realFar: number;
+
+  // Purchasable FAR — additional FAR purchasable from authority.
+  @Column({
+    name: 'purchasable_far',
+    type: 'decimal',
+    precision: 5,
+    scale: 2,
+    default: 0,
+  })
+  purchasableFar: number;
 
   @Column({
     name: 'ground_coverage',

@@ -152,8 +152,21 @@ export class FarCalculationResponseDto {
   })
   roadWidth?: number;
 
-  @ApiProperty({ example: 3.0, description: 'Applicable FAR value' })
+  @ApiProperty({ example: 2.64, description: 'Applicable FAR value (= totalFar, kept for backward compatibility)' })
   applicableFar: number;
+
+  @ApiProperty({ example: 1.45, description: 'Real FAR — base FAR allowed by bylaws without payment' })
+  realFar: number;
+
+  @ApiProperty({ example: 1.19, description: 'Purchasable FAR — additional FAR purchasable from authority' })
+  purchasableFar: number;
+
+  @ApiProperty({ example: 2.64, description: 'Total FAR (Real + Purchasable)' })
+  totalFar: number;
+
+  @ApiPropertyOptional({ example: 'developed', description: 'Sub-zone applied (Ghaziabad only)' })
+  subZone?: string;
+
 
   @ApiProperty({
     example: 75,
@@ -175,6 +188,24 @@ export class FarCalculationResponseDto {
     description: 'Maximum built-up area in sqft',
   })
   maxBuiltUpAreaSqft: number;
+
+  @ApiProperty({ example: 290, description: 'Total area of all floors (Real FAR only) in sqm' })
+  totalAreaRealFar: number;
+
+  @ApiProperty({ example: 3122, description: 'Total area of all floors (Real FAR only) in sqft' })
+  totalAreaRealFarSqft: number;
+
+  @ApiProperty({ example: 528, description: 'Total area of all floors (with Purchasable FAR) in sqm' })
+  totalAreaWithPurchasable: number;
+
+  @ApiProperty({ example: 5684, description: 'Total area of all floors (with Purchasable FAR) in sqft' })
+  totalAreaWithPurchasableSqft: number;
+
+  @ApiProperty({ example: 1, description: 'Max floors achievable on full ground coverage (Real FAR only)' })
+  maxFloorsRealFar: number;
+
+  @ApiProperty({ example: 3, description: 'Max floors achievable on full ground coverage (with Purchasable FAR)' })
+  maxFloorsWithPurchasable: number;
 
   @ApiProperty({
     example: 125.42,

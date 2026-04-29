@@ -90,10 +90,11 @@ export class FarService {
     const plotAreaSqm = convertToSqm(input.plotArea, input.plotUnit);
     const areaConversions = convertFromSqm(plotAreaSqm);
 
-    // Find applicable plot size rule
+    // Find applicable plot size rule (filter by subZone for Ghaziabad etc.)
     const applicableRule = this.findApplicablePlotRule(
       city.plotSizeRules,
       plotAreaSqm,
+      input.subZone ?? null,
     );
 
     if (!applicableRule) {
@@ -124,7 +125,16 @@ export class FarService {
     }
 
     // Calculate buildable areas
-    const maxBuiltUpArea = plotAreaSqm * effectiveFar;
+    // realFar/purchasableFar/totalFar are independent of road-width FAR override.
+    // effectiveFar is the cap applied to maxBuiltUpArea (may be lowered by road width).
+    const realFar = Number(applicableRule.realFar ?? 0);
+    const purchasableFar = Number(applicableRule.purchasableFar ?? 0);
+    const totalFar = realFar + purchasableFar > 0 ? realFar + purchasableFar : effectiveFar;
+    // If road-width override is in effect, clamp totalFar to it
+    const cappedTotalFar = farSource === 'road_width' ? Math.min(totalFar, effectiveFar) : totalFar;
+
+    const maxBuiltUpArea = plotAreaSqm * cappedTotalFar;
+    const realBuiltUpArea = plotAreaSqm * realFar;
     const groundCoverage = Number(applicableRule.groundCoverage);
     const maxGroundFloorArea = plotAreaSqm * (groundCoverage / 100);
 
@@ -217,12 +227,28 @@ export class FarService {
       plotAreaGaj: areaConversions.gaj,
       roadWidth: input.roadWidth,
 
-      applicableFar: round(effectiveFar),
+      applicableFar: round(cappedTotalFar),
+      realFar: round(realFar),
+      purchasableFar: round(purchasableFar),
+      totalFar: round(cappedTotalFar),
+      subZone: applicableRule.subZone ?? undefined,
       groundCoverage,
       farSource,
 
       maxBuiltUpArea: round(maxBuiltUpArea),
       maxBuiltUpAreaSqft: round(maxBuiltUpArea * 10.7639),
+      totalAreaRealFar: round(realBuiltUpArea),
+      totalAreaRealFarSqft: round(realBuiltUpArea * 10.7639),
+      totalAreaWithPurchasable: round(maxBuiltUpArea),
+      totalAreaWithPurchasableSqft: round(maxBuiltUpArea * 10.7639),
+      maxFloorsRealFar:
+        maxGroundFloorArea > 0
+          ? Math.floor(realBuiltUpArea / maxGroundFloorArea)
+          : 0,
+      maxFloorsWithPurchasable:
+        maxGroundFloorArea > 0
+          ? Math.floor(maxBuiltUpArea / maxGroundFloorArea)
+          : 0,
       maxGroundFloorArea: round(maxGroundFloorArea),
       maxGroundFloorAreaSqft: round(maxGroundFloorArea * 10.7639),
 
@@ -271,14 +297,31 @@ export class FarService {
   }
 
   /**
-   * Find applicable plot size rule
+   * Find applicable plot size rule.
+   * For cities with sub-zones (e.g. Ghaziabad), filter by subZone first.
+   * If no rule matches the subZone, falls back to rules with no subZone.
    */
   private findApplicablePlotRule(
     rules: PlotSizeRule[],
     plotAreaSqm: number,
+    subZone?: string | null,
   ): PlotSizeRule | null {
-    // Sort rules by minSize ascending
-    const sortedRules = [...rules].sort(
+    // Bucket rules: those matching the subZone, those with no subZone (legacy)
+    let candidates = rules;
+    if (subZone) {
+      const matching = rules.filter((r) => r.subZone === subZone);
+      if (matching.length > 0) {
+        candidates = matching;
+      }
+    } else {
+      // No subZone requested: prefer rules with no subZone, else all
+      const noSubZone = rules.filter((r) => !r.subZone);
+      if (noSubZone.length > 0) {
+        candidates = noSubZone;
+      }
+    }
+
+    const sortedRules = [...candidates].sort(
       (a, b) => Number(a.minSizeSqm) - Number(b.minSizeSqm),
     );
 
@@ -291,7 +334,6 @@ export class FarService {
       }
     }
 
-    // Return last rule for plots exceeding all ranges
     return sortedRules[sortedRules.length - 1] || null;
   }
 

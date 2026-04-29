@@ -13,6 +13,7 @@ import {
 export type AreaUnit = 'sqm' | 'sqft' | 'sqyd' | 'gaj';
 export type CityId = 'delhi' | 'noida' | 'gurugram' | 'ghaziabad' | 'faridabad';
 export type FacingDirection = 'north' | 'south' | 'east' | 'west';
+export type SubZone = 'developed' | 'new_development';
 export type RoomType =
   | 'living'
   | 'dining'
@@ -35,6 +36,17 @@ export class CalculateFarDto {
   @IsString()
   @IsIn(['delhi', 'noida', 'gurugram', 'ghaziabad', 'faridabad'])
   city: CityId;
+
+  @ApiPropertyOptional({
+    description:
+      'Sub-zone within the city. Required for Ghaziabad to choose between Developed Area and New Development Area. Ignored for other cities.',
+    enum: ['developed', 'new_development'],
+    example: 'developed',
+  })
+  @IsOptional()
+  @IsString()
+  @IsIn(['developed', 'new_development'])
+  subZone?: SubZone;
 
   @ApiProperty({
     description: 'Plot area value',
