@@ -14,7 +14,8 @@ export class FloorPlanService {
   private get anthropic(): Anthropic {
     if (!this._anthropic) {
       this._anthropic = new Anthropic({
-        apiKey: process.env.ANTHROPIC_API_KEY,
+        apiKey: process.env.ANTHROPIC_API_KEY || 'dummy',
+        baseURL: process.env.ANTHROPIC_BASE_URL || 'http://127.0.0.1:18801',
       });
     }
     return this._anthropic;
